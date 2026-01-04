@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DNA to RNA Converter</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
+}
+
+.container {
+    text-align: center;
+    margin-top: 6%;
+}
+
+h1 {
+    font-size: 2.5em;
+}
+
+textarea, .output-box {
+    width: 60%;
+    height: 150px;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid white;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    margin: 10px auto;
+    white-space: pre-wrap;
+}
+
+.output-box {
+    overflow-y: auto;
+    text-align: left;
+}
+
+button {
+    padding: 10px 25px;
+    margin-top: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.error {
+    color: red;
+    font-weight: bold;
+}
+
+.stats {
+    margin-top: 15px;
+    font-size: 16px;
+}
+</style>
+</head>
+
+<body>
+
+<video autoplay muted loop playsinline>
+    <source src="{{ url_for('static', filename='bg.mp4') }}" type="video/mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="container">
+    <h1>Hi! Convert your DNA into RNA here</h1>
+
+    <form method="POST">
+        <textarea name="sequence" placeholder="Enter FASTA / DNA sequence...">{{ input_sequence }}</textarea><br>
+
+        <label>
+            <input type="checkbox" name="strict"> Restrict to DNA only
+        </label><br><br>
+
+        <button type="submit">Convert</button>
+    </form>
+
+    {% if rna_sequence %}
+        <h3>RNA Sequence</h3>
+        <div class="output-box">{{ rna_sequence | safe }}</div>
+
+        <div class="stats">
+            🧬 Length: {{ stats.length }} |
+            📊 GC%: {{ stats.gc }} |
+            ❌ Invalid: {{ stats.invalid }}
+        </div>
+
+        <form method="POST" action="/download">
+            <input type="hidden" name="rna" value="{{ rna_sequence }}">
+            <button type="submit">📥 Download FASTA</button>
+        </form>
+    {% endif %}
+</div>
+
+</body>
+</html>
